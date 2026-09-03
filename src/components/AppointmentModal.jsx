@@ -20,6 +20,14 @@ export default function AppointmentModal({ isOpen, onClose, doctors = [], select
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
+  React.useEffect(() => {
+    if (selectedDoctorId) {
+      setFormData((prev) => ({ ...prev, doctorId: selectedDoctorId }));
+    } else if (doctors.length > 0 && !formData.doctorId) {
+      setFormData((prev) => ({ ...prev, doctorId: doctors[0]._id }));
+    }
+  }, [selectedDoctorId, doctors]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {

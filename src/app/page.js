@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import useSWR from 'swr';
 import Navbar from '@/components/Navbar';
 import HeroBanner from '@/components/HeroBanner';
 import BentoGridServices from '@/components/BentoGridServices';
@@ -9,38 +10,22 @@ import OpticalShowcase from '@/components/OpticalShowcase';
 import AppointmentModal from '@/components/AppointmentModal';
 import Footer from '@/components/Footer';
 
+const fetcher = (url) => fetch(url).then((res) => res.json());
+
 export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDoctorId, setSelectedDoctorId] = useState('');
-  const [doctors, setDoctors] = useState([]);
-  const [opticalFrames, setOpticalFrames] = useState([]);
 
-  useEffect(() => {
-    // 1. Initial Seed Data check
-    fetch('/api/v1/user/seed', { method: 'POST' }).catch(() => {});
+  // 1. Initial Seed trigger (populates 10 optical products into MongoDB if empty)
+  useSWR('/api/v1/user/seed', (url) => fetch(url, { method: 'POST' }).catch(() => {}));
 
-    // 2. Fetch active doctors
-    fetch('/api/v1/user/doctors')
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.success && json.data) {
-          setDoctors(json.data);
-        }
-      })
-      .catch(() => {});
+  // 2. Fetch active doctors via SWR
+  const { data: doctorsData } = useSWR('/api/v1/user/doctors', fetcher, { revalidateOnFocus: false });
+  const doctors = doctorsData?.success ? doctorsData.data : [];
 
-    // 3. Fetch treatments and optical frames
-    fetch('/api/v1/user/treatments')
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.success && json.data) {
-          if (json.data.opticalFrames) {
-            setOpticalFrames(json.data.opticalFrames);
-          }
-        }
-      })
-      .catch(() => {});
-  }, []);
+  // 3. Fetch treatments & optical frames via SWR
+  const { data: treatmentsData } = useSWR('/api/v1/user/treatments', fetcher, { revalidateOnFocus: false });
+  const opticalFrames = treatmentsData?.success && treatmentsData.data?.opticalFrames ? treatmentsData.data.opticalFrames : [];
 
   const handleOpenBooking = (doctorId = '') => {
     setSelectedDoctorId(doctorId);

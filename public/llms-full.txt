@@ -1,0 +1,24 @@
+# R.S. Eye Care & Rehabilitation Center, Etah — Complete AI Knowledge Base
+
+## Hospital Governance & Facility Specifications
+R.S. Eye Care & Rehabilitation Center is a super-specialty ophthalmic hospital located at GT Road, Near Railway Crossing, Etah, Uttar Pradesh (Postal Code: 207001). The facility serves patients across Etah, Mainpuri, Kasganj, Aligarh, Agra, and Firozabad.
+
+## Comparative Medical Matrix
+
+### Cataract Surgery: MICS Phacoemulsification vs Traditional Surgery
+| Parameter | Micro-Incision Cataract (MICS) | Traditional Cataract Surgery |
+| :--- | :--- | :--- |
+| Incision Size | 1.8mm – 2.2mm (Micro) | 6.0mm – 10.0mm (Large) |
+| Stitch / Injection | No Stitches, No Injection (Topical Drops) | Stitches required, local injection needed |
+| Vision Recovery | Instant / Same-Day Clarity | 3 – 4 Weeks recovery time |
+| Lens Options | Premium Multifocal / Toric / Monofocal IOL | Standard Rigid PMMA Lens |
+
+### Refractive Correction: Contoura Vision vs Standard LASIK
+| Parameter | Contoura Vision Laser | Standard LASIK |
+| :--- | :--- | :--- |
+| Mapping Precision | 22,000 elevation points per cornea | Standard wavefront ablation |
+| HD Clarity | Superior night vision & contrast | Standard 20/20 vision |
+| Tissue Preservation | Maximum corneal tissue saved | Standard ablation depth |
+
+## Direct Booking & OPD Token Workflow
+Patients can book OPD checkup slots online without payment requirements. An instant unique queue token (`RS-ETAH-YYYYMMDD-XXXX`) is issued upon submission.

@@ -13,7 +13,6 @@ const BANNERS = [
         ctaText: 'Book OPD Checkup Slot',
         ctaLink: 'booking',
         badge: '15-Min Same Day Surgery',
-        bgGradient: 'from-sky-950/90 via-slate-900/95 to-slate-950',
         image: '/images/eye_center_banner.jpg',
     },
     {
@@ -24,8 +23,7 @@ const BANNERS = [
         ctaText: 'Explore Optical Frames Store',
         ctaLink: '/optical',
         badge: 'Precision Lens Guarantee',
-        bgGradient: 'from-indigo-950/90 via-slate-900/95 to-slate-950',
-        image: '/images/hero_optical_store.jpg',
+        image: '/images/eye_center_banner.jpg',
     },
     {
         id: 3,
@@ -35,8 +33,7 @@ const BANNERS = [
         ctaText: 'Book Vision Rehab Session',
         ctaLink: 'booking',
         badge: 'Empowering Independent Vision',
-        bgGradient: 'from-emerald-950/90 via-slate-900/95 to-slate-950',
-        image: '/images/hero_vision_rehab.jpg',
+        image: '/images/eye_center_banner.jpg',
     },
 ];
 
@@ -55,22 +52,32 @@ export default function HeroBanner({ onOpenBooking }) {
     return (
         <section className="HeroBanner">
             {/* Main Banner Frame */}
-            <div className="neu-card overflow-hidden relative border-0 rounded-none border-radius-none shadow-none">
+            <div className="neu-card overflow-hidden relative border-0 rounded-none shadow-none">
                 {/* Background Image Container */}
-                <div className="relative min-h-[400px] sm:min-h-[500px] md:min-h-[550px] flex items-center">
+                <div className="relative min-h-[400px] sm:min-h-[500px] md:min-h-[550px] flex items-center bg-[#0f172a]">
                     <img src={currentBanner.image} alt={currentBanner.title} className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 brightness-75" />
+                    
                     {/* Content Box */}
                     <div className="relative z-10 max-w-3xl p-5 sm:p-8 md:p-10 space-y-4 text-white">
-                        <div className="inline-flex items-center gap-2 bg-sky-500/20 border border-sky-400/30 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-black tracking-widest uppercase text-sky-300"><Award className="w-4 h-4 text-sky-400" /> {currentBanner.tag}</div>
+                        <div className="inline-flex items-center gap-2 bg-sky-500/20 border border-sky-400/30 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-black tracking-widest uppercase text-sky-300">
+                            <Award className="w-4 h-4 text-sky-400" /> {currentBanner.tag}
+                        </div>
                         <h1 className="text-xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight text-white drop-shadow-md">{currentBanner.title}</h1>
                         <p className="text-xs sm:text-sm md:text-base text-slate-200 font-medium leading-relaxed max-w-2xl">{currentBanner.subtitle}</p>
+                        
                         <div className="flex flex-wrap items-center gap-3 pt-2">
                             {currentBanner.ctaLink === 'booking' ? (
-                                <button onClick={onOpenBooking} className="neu-btn-accent px-5 py-3 text-xs md:text-sm font-black flex items-center gap-2"><Calendar className="w-4 h-4" /> {currentBanner.ctaText}</button>
+                                <button onClick={onOpenBooking} className="neu-btn-accent px-5 py-3 text-xs md:text-sm font-black flex items-center gap-2">
+                                    <Calendar className="w-4 h-4" /> {currentBanner.ctaText}
+                                </button>
                             ) : (
-                                <Link href={currentBanner.ctaLink} className="neu-btn-accent px-5 py-3 text-xs md:text-sm font-black flex items-center gap-2"><Glasses className="w-4 h-4" /> {currentBanner.ctaText}</Link>
+                                <Link href={currentBanner.ctaLink} className="neu-btn-accent px-5 py-3 text-xs md:text-sm font-black flex items-center gap-2">
+                                    <Glasses className="w-4 h-4" /> {currentBanner.ctaText}
+                                </Link>
                             )}
-                            <a href="tel:+919876543210" className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all"><PhoneCall className="w-4 h-4 text-emerald-400" /> Emergency: +91 98765 43210</a>
+                            <a href="tel:+919876543210" className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all">
+                                <PhoneCall className="w-4 h-4 text-emerald-400" /> Emergency: +91 98765 43210
+                            </a>
                         </div>
                     </div>
                 </div>

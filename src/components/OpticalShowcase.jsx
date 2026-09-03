@@ -4,47 +4,50 @@ import React from 'react';
 import { Glasses, Check, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 
-export default function OpticalShowcase({ opticalFrames = [], onOpenBooking }) {
-  const defaultFrames = [
-    {
-      _id: 'frame-1',
-      name: 'RS Titanium UltraLite Air Frame',
-      brand: 'RS Signature Premium',
-      category: 'FRAMES',
-      lensType: 'Blue Cut Digital Anti-Glare Lens',
-      frameShape: 'Rectangle / Sleek Rimless',
-      material: 'Pure Japanese Titanium (Featherweight 8g)',
-      priceRange: '₹1,499 - ₹3,499',
-      description: 'Ultra-lightweight titanium frame designed for computer screen work and maximum ear comfort.',
-      imageUrl: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=600&auto=format&fit=crop',
-    },
-    {
-      _id: 'frame-2',
-      name: 'RS Flexi-Shield Prescription Frame',
-      brand: 'RS Ergonomic Optical',
-      category: 'FRAMES',
-      lensType: 'Progressive HD Multi-Focal Lens Compatible',
-      frameShape: 'Classic Wayfarer / Oval',
-      material: 'Flexible Italian Acetate',
-      priceRange: '₹999 - ₹2,499',
-      description: 'Unbreakable flex-hinge frame ideal for active daily use, reading, and multifocal lenses.',
-      imageUrl: 'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?q=80&w=600&auto=format&fit=crop',
-    },
-    {
-      _id: 'frame-3',
-      name: 'RS BlueGuard Digital Anti-Glare Power Lens',
-      brand: 'RS Power Lens Series',
-      category: 'POWER_LENSES',
-      lensType: 'Blue Light Filtering + Anti-Reflective Coating',
-      frameShape: 'Universal Fit',
-      material: 'High Index Polycarbonate 1.67',
-      priceRange: '₹799 - ₹1,999',
-      description: 'Blocks harmful blue light emitted from mobiles, laptops, and LED screens to reduce eye strain.',
-      imageUrl: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=600&auto=format&fit=crop',
-    },
-  ];
+const INITIAL_PRODUCTS = [
+  {
+    _id: 'prod-1',
+    name: 'RS Titanium Rimless UltraLite Air',
+    brand: 'RS Signature Premium',
+    category: 'FRAMES',
+    lensType: 'Blue Cut Digital Anti-Glare Lens',
+    frameShape: 'Rectangle / Sleek Rimless',
+    material: 'Pure Japanese Titanium (Featherweight 8g)',
+    priceRange: '₹1,499 - ₹3,499',
+    description: 'Featherweight pure titanium rimless specs designed for all-day computer screen work and ear comfort.',
+    imageUrl: '/images/eye_center_banner.jpg',
+    isTrending: true,
+  },
+  {
+    _id: 'prod-2',
+    name: 'RS Flexi-Shield Acetate Prescription Frame',
+    brand: 'RS Ergonomic Optical',
+    category: 'FRAMES',
+    lensType: 'Progressive HD Multi-Focal Compatible',
+    frameShape: 'Classic Wayfarer / Oval',
+    material: 'High-Grade Flexible Italian Acetate',
+    priceRange: '₹999 - ₹2,499',
+    description: 'Durable flex-hinge frame ideal for active daily use, reading, and multifocal prescriptions.',
+    imageUrl: '/images/eye_center_banner.jpg',
+    isTrending: true,
+  },
+  {
+    _id: 'prod-3',
+    name: 'RS BlueGuard Digital Anti-Glare Lenses',
+    brand: 'RS Power Lens Series',
+    category: 'POWER_LENSES',
+    lensType: 'Blue Light Filtering + Anti-Reflective Coating',
+    frameShape: 'Universal Fitting',
+    material: 'High Index Polycarbonate 1.67',
+    priceRange: '₹799 - ₹1,999',
+    description: 'Blocks harmful blue light emitted from mobiles, laptops, and LED screens to reduce eye fatigue.',
+    imageUrl: '/images/eye_center_banner.jpg',
+    isTrending: true,
+  },
+];
 
-  const list = opticalFrames.length > 0 ? opticalFrames : defaultFrames;
+export default function OpticalShowcase({ opticalFrames = [], onOpenBooking }) {
+  const list = opticalFrames.length > 0 ? opticalFrames : INITIAL_PRODUCTS;
 
   return (
     <section id="optical-catalog" className="py-12 md:py-20 px-4 max-w-7xl mx-auto">
@@ -61,11 +64,11 @@ export default function OpticalShowcase({ opticalFrames = [], onOpenBooking }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {list.map((item) => (
-          <div key={item._id} className="neu-card p-6 flex flex-col justify-between group">
+        {list.slice(0, 6).map((item) => (
+          <div key={item._id || item.name} className="neu-card p-6 flex flex-col justify-between group">
             <div className="space-y-4">
               <div className="w-full h-48 rounded-xl overflow-hidden neu-flat relative">
-                <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <img src={item.imageUrl || '/images/eye_center_banner.jpg'} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 <span className="absolute top-3 right-3 bg-slate-900/90 text-white text-xs font-extrabold px-3 py-1 rounded-full backdrop-blur-md">
                   {item.priceRange}
                 </span>

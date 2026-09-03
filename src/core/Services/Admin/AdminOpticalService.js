@@ -1,13 +1,21 @@
 import { connectDB } from '../../Database/mongoose.js';
 import OpticalFrame from '../../Models/OpticalFrame.js';
+import { DUMMY_PRODUCTS } from '../SeedService.js';
 
 export class AdminOpticalService {
   static async listAllFrames() {
     try {
       await connectDB();
-      return await OpticalFrame.find().sort({ createdAt: -1 }).lean();
+      let frames = await OpticalFrame.find().sort({ createdAt: -1 }).lean();
+      
+      if (!frames || frames.length === 0) {
+        await OpticalFrame.insertMany(DUMMY_PRODUCTS);
+        frames = await OpticalFrame.find().sort({ createdAt: -1 }).lean();
+      }
+
+      return frames || DUMMY_PRODUCTS;
     } catch (err) {
-      return [];
+      return DUMMY_PRODUCTS;
     }
   }
 
@@ -15,14 +23,14 @@ export class AdminOpticalService {
     await connectDB();
     const frame = await OpticalFrame.create({
       name: data.name,
-      brand: data.brand || 'RS Eye Care Signature',
+      brand: data.brand || 'RS Signature Premium',
       category: data.category || 'FRAMES',
       lensType: data.lensType || 'Blue Cut Digital Anti-Glare',
       frameShape: data.frameShape || 'Rectangle / Oval',
-      material: data.material || 'TR90 Lightweight Acetate',
-      priceRange: data.priceRange || '₹999 - ₹2,499',
-      description: data.description || 'Premium optical frame with high durability.',
-      imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=600',
+      material: data.material || 'TR90 Acetate',
+      priceRange: data.priceRange || '₹1,499 - ₹2,999',
+      description: data.description || 'Precision prescription optical frame.',
+      imageUrl: data.imageUrl || '/images/eye_center_banner.jpg',
       isTrending: Boolean(data.isTrending),
     });
     return frame.toObject();
@@ -30,8 +38,7 @@ export class AdminOpticalService {
 
   static async updateFrame(id, data) {
     await connectDB();
-    const updated = await OpticalFrame.findByIdAndUpdate(id, data, { new: true }).lean();
-    return updated;
+    return await OpticalFrame.findByIdAndUpdate(id, data, { new: true }).lean();
   }
 
   static async deleteFrame(id) {

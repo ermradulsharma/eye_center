@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/v1/admin/
+
+# AI Search Engine & LLM Crawler Directives
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /api/v1/raw-markdown/
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://rseyecare.com/sitemap.xml

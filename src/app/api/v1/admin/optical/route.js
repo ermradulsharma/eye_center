@@ -1,7 +1,7 @@
 import { AdminOpticalController } from '@/core/Http/Controllers/Admin/AdminOpticalController.js';
 
-export async function GET() {
-  return await AdminOpticalController.getFrames();
+export async function GET(request) {
+  return await AdminOpticalController.getFrames(request);
 }
 
 export async function POST(request) {

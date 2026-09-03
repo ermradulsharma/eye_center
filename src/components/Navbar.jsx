@@ -1,10 +1,12 @@
 'use client';
 
-import React from 'react';
-import { Eye, PhoneCall, Calendar, ShieldCheck, MapPin, LayoutDashboard, Glasses } from 'lucide-react';
+import React, { useState } from 'react';
+import { Eye, PhoneCall, Calendar, ShieldCheck, MapPin, LayoutDashboard, Glasses, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Navbar({ onOpenBooking }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-40 bg-[#ebf1f6] border-b border-[#d1dce9] shadow-sm">
       {/* Top Emergency Bar */}
@@ -54,16 +56,42 @@ export default function Navbar({ onOpenBooking }) {
           <a href="/#rehab" className="hover:text-sky-600 transition-colors">Vision Rehabilitation</a>
         </nav>
 
-        {/* CTA Button */}
-        <div>
+        {/* CTA Button & Mobile Toggle */}
+        <div className="flex items-center gap-3">
           <button
             onClick={onOpenBooking}
-            className="neu-btn-accent px-5 py-2.5 flex items-center gap-2 text-sm font-bold tracking-wide"
+            className="neu-btn-accent px-4 sm:px-5 py-2.5 flex items-center gap-2 text-xs sm:text-sm font-bold tracking-wide"
           >
-            <Calendar className="w-4 h-4" /> Book OPD Appointment
+            <Calendar className="w-4 h-4" /> Book OPD Checkup
+          </button>
+          
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden neu-btn p-2 text-slate-700"
+            aria-label="Toggle Navigation Menu"
+          >
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
+
+      {/* Mobile Navigation Drawer */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-[#ebf1f6] border-t border-slate-300 p-4 space-y-3 font-bold text-xs text-slate-800 animate-fade-in">
+          <a href="/#services" onClick={() => setIsMobileMenuOpen(false)} className="block p-2 rounded-lg hover:bg-slate-200">
+            Eye Treatments & MICS Cataract
+          </a>
+          <a href="/#doctors" onClick={() => setIsMobileMenuOpen(false)} className="block p-2 rounded-lg hover:bg-slate-200">
+            Specialist Ophthalmologists
+          </a>
+          <Link href="/optical" onClick={() => setIsMobileMenuOpen(false)} className="block p-2 rounded-lg hover:bg-slate-200 text-sky-700">
+            Prescription Optical Store
+          </Link>
+          <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block p-2 rounded-lg hover:bg-slate-200 text-indigo-700">
+            Hospital Admin Portal
+          </Link>
+        </div>
+      )}
     </header>
   );
 }

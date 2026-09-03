@@ -16,7 +16,7 @@ const jsonLdSchema = {
   "@context": "https://schema.org",
   "@type": "MedicalClinic",
   "name": "R.S. Eye Care & Rehabilitation Center",
-  "image": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=600",
+  "image": "/images/eye_center_banner.jpg",
   "telephone": "+91-9876543210",
   "address": {
     "@type": "PostalAddress",

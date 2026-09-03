@@ -1,415 +1,204 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Eye, Glasses, Calendar, Plus, Trash2, CheckCircle, Clock, ShieldCheck, ArrowLeft, RefreshCw, LayoutDashboard } from 'lucide-react';
-import Link from 'next/link';
+import React, { useState } from 'react';
+import { Sparkles } from 'lucide-react';
+import { useAdminData } from '@/hooks/useAdminData.js';
+
+// Import Modular Admin UI Sub-Components
+import AdminSidebar from '@/components/admin/AdminSidebar';
+import AdminHeader from '@/components/admin/AdminHeader';
+import AdminOverviewTab from '@/components/admin/AdminOverviewTab';
+import AdminQueueTab from '@/components/admin/AdminQueueTab';
+import AdminOpticalTab from '@/components/admin/AdminOpticalTab';
+import AddFrameModal from '@/components/admin/AddFrameModal';
+import AdminFooter from '@/components/admin/AdminFooter';
 
 export default function AdminDashboardPage() {
-  const [activeTab, setActiveTab] = useState('optical'); // 'optical' | 'appointments'
-  const [frames, setFrames] = useState([]);
-  const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAddFrameModalOpen, setIsAddFrameModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
   const [msg, setMsg] = useState(null);
 
-  // New Frame Form State
+  // Custom Data Hook (Zero raw fetch calls in Page component)
+  const {
+    frames,
+    appointments,
+    loading,
+    refreshData,
+    createOpticalFrame,
+    deleteOpticalFrame,
+    updateAppointmentStatus,
+  } = useAdminData();
+
+  // Clean Form State for Adding Optical Frame
   const [newFrame, setNewFrame] = useState({
     name: '',
-    brand: 'RS Signature Premium',
+    brand: '',
     category: 'FRAMES',
-    lensType: 'Blue Cut Digital Anti-Glare',
-    frameShape: 'Rectangle / Oval',
-    material: 'TR90 Lightweight Acetate',
-    priceRange: '₹1,499 - ₹2,999',
+    lensType: '',
+    frameShape: '',
+    material: '',
+    priceRange: '',
     description: '',
-    imageUrl: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=600',
+    imageUrl: '',
     isTrending: true,
   });
-
-  useEffect(() => {
-    fetchAdminData();
-  }, []);
-
-  const fetchAdminData = async () => {
-    setLoading(true);
-    try {
-      const [resFrames, resAppts] = await Promise.all([
-        fetch('/api/v1/admin/optical'),
-        fetch('/api/v1/admin/appointments'),
-      ]);
-
-      const jsonFrames = await resFrames.json();
-      const jsonAppts = await resAppts.json();
-
-      if (jsonFrames.success) setFrames(jsonFrames.data || []);
-      if (jsonAppts.success) setAppointments(jsonAppts.data || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCreateFrame = async (e) => {
     e.preventDefault();
     if (!newFrame.name) return;
 
     try {
-      const res = await fetch('/api/v1/admin/optical', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newFrame),
+      await createOpticalFrame(newFrame);
+      setMsg('New optical frame successfully added to hospital catalog!');
+      setIsAddFrameModalOpen(false);
+      setNewFrame({
+        name: '',
+        brand: '',
+        category: 'FRAMES',
+        lensType: '',
+        frameShape: '',
+        material: '',
+        priceRange: '',
+        description: '',
+        imageUrl: '',
+        isTrending: true,
       });
-      const json = await res.json();
-      if (json.success) {
-        setMsg('New Frame successfully added to Hospital Store!');
-        setNewFrame({
-          name: '',
-          brand: 'RS Signature Premium',
-          category: 'FRAMES',
-          lensType: 'Blue Cut Digital Anti-Glare',
-          frameShape: 'Rectangle / Oval',
-          material: 'TR90 Lightweight Acetate',
-          priceRange: '₹1,499 - ₹2,999',
-          description: '',
-          imageUrl: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=600',
-          isTrending: true,
-        });
-        fetchAdminData();
-      }
     } catch (err) {
-      console.error(err);
+      setMsg(err.message || 'Failed to add frame item.');
     }
   };
 
   const handleDeleteFrame = async (id) => {
-    if (!confirm('Are you sure you want to remove this frame?')) return;
+    if (!confirm('Remove this frame item from hospital store?')) return;
     try {
-      const res = await fetch(`/api/v1/admin/optical?id=${id}`, { method: 'DELETE' });
-      const json = await res.json();
-      if (json.success) {
-        setMsg('Frame removed.');
-        fetchAdminData();
-      }
+      await deleteOpticalFrame(id);
+      setMsg('Item removed from catalog successfully.');
     } catch (err) {
-      console.error(err);
+      setMsg(err.message || 'Error deleting item.');
     }
   };
 
   const handleUpdateApptStatus = async (id, status) => {
     try {
-      const res = await fetch('/api/v1/admin/appointments', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status }),
-      });
-      const json = await res.json();
-      if (json.success) {
-        fetchAdminData();
-      }
+      await updateAppointmentStatus(id, status);
+      setMsg(`Patient Queue Token updated to: ${status}`);
     } catch (err) {
-      console.error(err);
+      setMsg(err.message || 'Error updating appointment status.');
     }
   };
 
+  // Filtered Lists
+  const filteredFrames = frames.filter((f) =>
+    f.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    f.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    f.category?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredAppointments = appointments.filter((a) => {
+    const matchesSearch =
+      a.patientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.tokenNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.patientPhone?.includes(searchQuery);
+    const matchesStatus = statusFilter === 'ALL' || a.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const pendingCount = appointments.filter((a) => a.status === 'BOOKED').length;
+  const completedCount = appointments.filter((a) => a.status === 'COMPLETED').length;
+
   return (
-    <div className="min-h-screen bg-[#ebf1f6] text-slate-900 pb-16">
-      {/* Header */}
-      <header className="bg-[#0f172a] text-white py-4 px-6 sticky top-0 z-40 border-b-4 border-sky-600 shadow-md">
-        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 neu-flat rounded-xl flex items-center justify-center text-sky-400">
-              <LayoutDashboard className="w-6 h-6" />
-            </div>
-            <div>
-              <h1 className="text-lg font-black tracking-tight text-white leading-tight">
-                R.S. Eye Care Hospital <span className="text-sky-400 font-extrabold">Admin Dashboard</span>
-              </h1>
-              <p className="text-xs text-slate-400 font-semibold">Optical Store & OPD Appointments Management (Etah Center)</p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-[#ebf1f6] text-[#0f172a] flex flex-col md:flex-row font-sans selection:bg-sky-200 antialiased">
+      {/* Mobile Backdrop */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-slate-950/70 z-40 md:hidden backdrop-blur-xs transition-opacity"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
 
-          <div className="flex items-center gap-3">
-            <button onClick={fetchAdminData} className="neu-btn px-3 py-1.5 text-xs font-bold text-slate-800 flex items-center gap-1">
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh Data
-            </button>
-            <Link href="/" className="neu-btn-accent px-4 py-1.5 text-xs font-extrabold flex items-center gap-1.5">
-              <ArrowLeft className="w-4 h-4" /> Go to Website
-            </Link>
-          </div>
-        </div>
-      </header>
+      {/* 1. Sidebar Component */}
+      <AdminSidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+        framesCount={frames.length}
+        appointmentsCount={appointments.length}
+        pendingCount={pendingCount}
+      />
 
-      {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 pt-8 space-y-8">
-        {/* Top Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="neu-card p-6 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-extrabold uppercase tracking-wider text-slate-500">Optical Store Inventory</p>
-              <h3 className="text-3xl font-black text-slate-900 mt-1">{frames.length} Items Listed</h3>
-              <p className="text-xs text-sky-600 font-bold mt-1">Power Glasses & Frames</p>
-            </div>
-            <Glasses className="w-10 h-10 text-indigo-600 neu-flat p-2 rounded-2xl" />
-          </div>
+      {/* 2. Main Executive Content Container */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top Navbar Header Component */}
+        <AdminHeader
+          activeTab={activeTab}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          setIsSidebarOpen={setIsSidebarOpen}
+          setIsAddFrameModalOpen={setIsAddFrameModalOpen}
+          fetchAdminData={refreshData}
+          loading={loading}
+        />
 
-          <div className="neu-card p-6 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-extrabold uppercase tracking-wider text-slate-500">Total OPD Bookings</p>
-              <h3 className="text-3xl font-black text-slate-900 mt-1">{appointments.length} Patients</h3>
-              <p className="text-xs text-emerald-600 font-bold mt-1">Direct Queue Tokens Issued</p>
-            </div>
-            <Calendar className="w-10 h-10 text-emerald-600 neu-flat p-2 rounded-2xl" />
-          </div>
-
-          <div className="neu-card p-6 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-extrabold uppercase tracking-wider text-slate-500">Hospital Status</p>
-              <h3 className="text-3xl font-black text-slate-900 mt-1">OPD ACTIVE</h3>
-              <p className="text-xs text-amber-600 font-bold mt-1">GT Road Etah Main Branch</p>
-            </div>
-            <Eye className="w-10 h-10 text-sky-600 neu-flat p-2 rounded-2xl" />
-          </div>
-        </div>
-
-        {/* Action Message Notice */}
-        {msg && (
-          <div className="neu-card p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-900 font-bold text-sm flex justify-between items-center">
-            <span>{msg}</span>
-            <button onClick={() => setMsg(null)} className="text-xs font-extrabold text-emerald-700">Dismiss</button>
-          </div>
-        )}
-
-        {/* Tab Selection */}
-        <div className="flex border-b border-slate-300 gap-4">
-          <button
-            onClick={() => setActiveTab('optical')}
-            className={`pb-3 text-sm font-extrabold flex items-center gap-2 border-b-2 transition-all ${
-              activeTab === 'optical' ? 'border-sky-600 text-sky-700' : 'border-transparent text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            <Glasses className="w-4 h-4" /> Optical Store & Glasses Manager
-          </button>
-          <button
-            onClick={() => setActiveTab('appointments')}
-            className={`pb-3 text-sm font-extrabold flex items-center gap-2 border-b-2 transition-all ${
-              activeTab === 'appointments' ? 'border-sky-600 text-sky-700' : 'border-transparent text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            <Calendar className="w-4 h-4" /> Patient OPD Appointments Queue
-          </button>
-        </div>
-
-        {/* TAB 1: OPTICAL STORE MANAGEMENT */}
-        {activeTab === 'optical' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Form Column */}
-            <div className="lg:col-span-5">
-              <div className="neu-card p-6 space-y-4">
-                <div className="border-b border-slate-200 pb-3">
-                  <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                    <Plus className="w-5 h-5 text-sky-600" /> Add New Glass / Frame to Store
-                  </h3>
-                  <p className="text-xs font-semibold text-slate-500">Fill details to list in Website Optical Catalog.</p>
-                </div>
-
-                <form onSubmit={handleCreateFrame} className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-800 mb-1">Frame / Product Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. RS Titanium Rimless UltraLite"
-                      value={newFrame.name}
-                      onChange={(e) => setNewFrame({ ...newFrame, name: e.target.value })}
-                      className="neu-input w-full p-2.5 text-xs font-semibold"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-extrabold text-slate-800 mb-1">Category *</label>
-                      <select
-                        value={newFrame.category}
-                        onChange={(e) => setNewFrame({ ...newFrame, category: e.target.value })}
-                        className="neu-input w-full p-2.5 text-xs font-semibold"
-                      >
-                        <option value="FRAMES">Optical Frame</option>
-                        <option value="POWER_LENSES">Power Lenses</option>
-                        <option value="SUNGLASSES">Sunglasses</option>
-                        <option value="KIDS_GLASSES">Kids Frames</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-extrabold text-slate-800 mb-1">Price Range *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. ₹1,499 - ₹2,999"
-                        value={newFrame.priceRange}
-                        onChange={(e) => setNewFrame({ ...newFrame, priceRange: e.target.value })}
-                        className="neu-input w-full p-2.5 text-xs font-semibold"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-extrabold text-slate-800 mb-1">Lens Technology</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Blue Cut Anti-Glare"
-                        value={newFrame.lensType}
-                        onChange={(e) => setNewFrame({ ...newFrame, lensType: e.target.value })}
-                        className="neu-input w-full p-2.5 text-xs font-semibold"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-extrabold text-slate-800 mb-1">Frame Material</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Pure Titanium / Acetate"
-                        value={newFrame.material}
-                        onChange={(e) => setNewFrame({ ...newFrame, material: e.target.value })}
-                        className="neu-input w-full p-2.5 text-xs font-semibold"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-800 mb-1">Description</label>
-                    <textarea
-                      rows="2"
-                      placeholder="e.g. Flexible acetate frame with anti-glare lens compatible."
-                      value={newFrame.description}
-                      onChange={(e) => setNewFrame({ ...newFrame, description: e.target.value })}
-                      className="neu-input w-full p-2.5 text-xs font-semibold"
-                    ></textarea>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-extrabold text-slate-800 mb-1">Image URL</label>
-                    <input
-                      type="url"
-                      value={newFrame.imageUrl}
-                      onChange={(e) => setNewFrame({ ...newFrame, imageUrl: e.target.value })}
-                      className="neu-input w-full p-2.5 text-xs font-semibold"
-                    />
-                  </div>
-
-                  <button type="submit" className="neu-btn-accent w-full py-3 text-xs font-extrabold flex items-center justify-center gap-2">
-                    <Plus className="w-4 h-4" /> Save & List on Website Catalog
-                  </button>
-                </form>
+        {/* Dashboard Main Content Body */}
+        <main className="flex-1 p-6 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
+          {/* Action Notification Banner */}
+          {msg && (
+            <div className="neu-card p-4 bg-sky-50/90 border-l-4 border-sky-600 text-sky-950 font-bold text-xs flex justify-between items-center animate-fade-in shadow-xs">
+              <div className="flex items-center gap-2.5">
+                <Sparkles className="w-4 h-4 text-sky-600 shrink-0" />
+                <span>{msg}</span>
               </div>
+              <button onClick={() => setMsg(null)} className="text-xs font-black text-sky-800 hover:underline">Dismiss</button>
             </div>
+          )}
 
-            {/* Catalog List Column */}
-            <div className="lg:col-span-7">
-              <div className="neu-card p-6 space-y-4">
-                <h3 className="text-lg font-black text-slate-900 border-b border-slate-200 pb-3">
-                  Currently Listed Optical Items ({frames.length})
-                </h3>
+          {/* TAB 1: OVERVIEW ANALYTICS */}
+          {activeTab === 'overview' && (
+            <AdminOverviewTab
+              appointments={appointments}
+              frames={frames}
+              pendingCount={pendingCount}
+              completedCount={completedCount}
+              setActiveTab={setActiveTab}
+            />
+          )}
 
-                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
-                  {frames.length === 0 ? (
-                    <p className="text-xs text-slate-500 font-semibold p-4 text-center">No items listed yet.</p>
-                  ) : (
-                    frames.map((item) => (
-                      <div key={item._id} className="neu-flat p-4 rounded-xl flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                          <img src={item.imageUrl} alt={item.name} className="w-14 h-14 object-cover rounded-lg neu-flat shrink-0" />
-                          <div>
-                            <span className="text-[10px] font-bold text-sky-700 bg-sky-100 px-2 py-0.5 rounded">
-                              {item.category}
-                            </span>
-                            <h4 className="text-sm font-black text-slate-900 leading-snug">{item.name}</h4>
-                            <p className="text-xs font-extrabold text-emerald-700 mt-0.5">{item.priceRange}</p>
-                          </div>
-                        </div>
+          {/* TAB 2: PATIENT OPD QUEUE */}
+          {activeTab === 'appointments' && (
+            <AdminQueueTab
+              filteredAppointments={filteredAppointments}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              handleUpdateApptStatus={handleUpdateApptStatus}
+            />
+          )}
 
-                        <button
-                          onClick={() => handleDeleteFrame(item._id)}
-                          className="p-2 neu-btn rounded-lg text-rose-600 hover:text-rose-800"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+          {/* TAB 3: OPTICAL STORE CATALOG */}
+          {activeTab === 'optical' && (
+            <AdminOpticalTab
+              filteredFrames={filteredFrames}
+              setIsAddFrameModalOpen={setIsAddFrameModalOpen}
+              handleDeleteFrame={handleDeleteFrame}
+            />
+          )}
+        </main>
 
-        {/* TAB 2: OPD APPOINTMENTS QUEUE */}
-        {activeTab === 'appointments' && (
-          <div className="neu-card p-6 space-y-4">
-            <h3 className="text-lg font-black text-slate-900 border-b border-slate-200 pb-3">
-              Hospital Patient OPD Queue ({appointments.length} Tokens)
-            </h3>
+        {/* 3. Footer Component */}
+        <AdminFooter />
+      </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs font-semibold text-slate-700">
-                <thead className="bg-slate-200/60 uppercase text-[11px] font-extrabold text-slate-900">
-                  <tr>
-                    <th className="p-3">Token #</th>
-                    <th className="p-3">Patient Name</th>
-                    <th className="p-3">Phone</th>
-                    <th className="p-3">Assigned Doctor</th>
-                    <th className="p-3">Date & Slot</th>
-                    <th className="p-3">Status</th>
-                    <th className="p-3 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {appointments.length === 0 ? (
-                    <tr>
-                      <td colSpan="7" className="p-4 text-center text-slate-500 font-semibold">
-                        No OPD bookings found yet.
-                      </td>
-                    </tr>
-                  ) : (
-                    appointments.map((appt) => (
-                      <tr key={appt._id} className="hover:bg-slate-100/50">
-                        <td className="p-3 font-extrabold text-sky-700">{appt.tokenNumber}</td>
-                        <td className="p-3 font-black text-slate-900">{appt.patientName} ({appt.patientAge} Yrs)</td>
-                        <td className="p-3">{appt.patientPhone}</td>
-                        <td className="p-3 font-bold text-slate-800">{appt.doctorName}</td>
-                        <td className="p-3">{appt.appointmentDate} <br /><span className="text-[10px] text-slate-500">{appt.timeSlot}</span></td>
-                        <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold ${
-                            appt.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-800' :
-                            appt.status === 'CANCELLED' ? 'bg-rose-100 text-rose-800' : 'bg-sky-100 text-sky-800'
-                          }`}>
-                            {appt.status}
-                          </span>
-                        </td>
-                        <td className="p-3 text-right space-x-1">
-                          <button
-                            onClick={() => handleUpdateApptStatus(appt._id, 'COMPLETED')}
-                            className="neu-btn px-2 py-1 text-[10px] font-bold text-emerald-700"
-                          >
-                            Mark Completed
-                          </button>
-                          <button
-                            onClick={() => handleUpdateApptStatus(appt._id, 'CANCELLED')}
-                            className="neu-btn px-2 py-1 text-[10px] font-bold text-rose-700"
-                          >
-                            Cancel
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-      </main>
+      {/* 4. Add Optical Frame Modal Drawer */}
+      <AddFrameModal
+        isOpen={isAddFrameModalOpen}
+        onClose={() => setIsAddFrameModalOpen(false)}
+        newFrame={newFrame}
+        setNewFrame={setNewFrame}
+        handleCreateFrame={handleCreateFrame}
+      />
     </div>
   );
 }

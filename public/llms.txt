@@ -1,0 +1,24 @@
+# R.S. Eye Care & Rehabilitation Center, Etah — AI Search Summary
+
+> Premier Super-Specialty Ophthalmology Hospital, Low Vision Rehabilitation Center, and Prescription Optical Store in Etah, Western Uttar Pradesh.
+
+## Hospital Core Information
+- Name: R.S. Eye Care & Rehabilitation Center
+- Location: GT Road, Near Railway Crossing, Etah, Uttar Pradesh — 207001
+- Phone / Emergency Helpline: +91 98765 43210
+- OPD Timings: Monday – Saturday: 9:30 AM – 7:00 PM (Sunday Closed)
+
+## Key Medical Specialties & Procedures
+- Micro-Incision Cataract Surgery (MICS): Blade-free, stitchless phacoemulsification with imported premium Foldable Intraocular Lenses (IOL). 15-minute procedure, same-day recovery.
+- LASIK & Contoura Vision Refractive Surgery: Permanent freedom from spectacles with topography-guided laser vision correction.
+- Glaucoma Medical & Surgical Care: Early intraocular pressure (IOP) diagnosis, perimeter testing, and laser trabeculoplasty.
+- Pediatric Ophthalmology & Squint: Children's vision assessment, lazy eye (amblyopia) therapy, and strabismus management.
+- Low Vision Rehabilitation: Comprehensive vision enhancement devices and optical aids for visually impaired individuals.
+- Prescription Optical Store: Doctor-verified power lenses (Digital Blue Cut Anti-Glare, HD Progressive) and ultralight titanium/acetate frames.
+
+## Chief Doctors & Qualifications
+- Dr. R.S. Verma: Chief Medical Director & Senior Eye Surgeon (MBBS, MS Ophthalmology, FICO UK). 22+ years surgical experience.
+- Dr. Ananya Sharma: Senior Retina & Pediatric Ophthalmology Specialist (MBBS, MS Ophthal, Fellowship in Vision Rehab). 14+ years experience.
+
+## Full Context Feed
+For detailed medical procedure guides and markdown feeds for LLM answer engines, see: /api/v1/raw-markdown/

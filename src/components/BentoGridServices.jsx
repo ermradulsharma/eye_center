@@ -21,15 +21,8 @@ export default function BentoGridServices({ onOpenBooking }) {
 
       {/* Bento Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-        {/* Block 1: Micro-Incision Cataract (MICS) - Large Card with BG Image */}
+        {/* Block 1: Micro-Incision Cataract (MICS) */}
         <div className="md:col-span-8 neu-card relative overflow-hidden group">
-          <div className="absolute inset-0 z-0">
-            <img
-              src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=800&auto=format&fit=crop"
-              alt="Cataract Surgery"
-              className="w-full h-full object-cover opacity-15 group-hover:scale-105 transition-transform duration-500"
-            />
-          </div>
           <div className="relative z-10 p-6 md:p-8 flex flex-col justify-between h-full space-y-6">
             <div className="space-y-4">
               <div className="w-14 h-14 neu-flat rounded-2xl flex items-center justify-center text-sky-600">
@@ -59,15 +52,8 @@ export default function BentoGridServices({ onOpenBooking }) {
           </div>
         </div>
 
-        {/* Block 2: Optical Frames & Lenses Shop - Medium Card with BG Image */}
+        {/* Block 2: Optical Frames & Lenses Shop */}
         <div id="optical" className="md:col-span-4 neu-card relative overflow-hidden border-2 border-sky-100 group">
-          <div className="absolute inset-0 z-0">
-            <img
-              src="https://images.unsplash.com/photo-1591076482161-42ce6da69f67?q=80&w=800&auto=format&fit=crop"
-              alt="Optical Store"
-              className="w-full h-full object-cover opacity-15 group-hover:scale-105 transition-transform duration-500"
-            />
-          </div>
           <div className="relative z-10 p-6 md:p-8 flex flex-col justify-between h-full space-y-6">
             <div className="space-y-4">
               <div className="w-14 h-14 neu-flat rounded-2xl flex items-center justify-center text-indigo-600">
@@ -93,13 +79,6 @@ export default function BentoGridServices({ onOpenBooking }) {
 
         {/* Block 3: LASIK & Contoura Vision */}
         <div className="md:col-span-4 neu-card relative overflow-hidden group">
-          <div className="absolute inset-0 z-0">
-            <img
-              src="https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=800&auto=format&fit=crop"
-              alt="LASIK Laser Surgery"
-              className="w-full h-full object-cover opacity-15 group-hover:scale-105 transition-transform duration-500"
-            />
-          </div>
           <div className="relative z-10 p-6 md:p-8 flex flex-col justify-between h-full space-y-6">
             <div className="space-y-4">
               <div className="w-14 h-14 neu-flat rounded-2xl flex items-center justify-center text-amber-600">
@@ -125,13 +104,6 @@ export default function BentoGridServices({ onOpenBooking }) {
 
         {/* Block 4: Vision Rehabilitation Center */}
         <div id="rehab" className="md:col-span-8 neu-card relative overflow-hidden group">
-          <div className="absolute inset-0 z-0">
-            <img
-              src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?q=80&w=800&auto=format&fit=crop"
-              alt="Vision Rehabilitation"
-              className="w-full h-full object-cover opacity-15 group-hover:scale-105 transition-transform duration-500"
-            />
-          </div>
           <div className="relative z-10 p-6 md:p-8 flex flex-col justify-between h-full space-y-6">
             <div className="space-y-4">
               <div className="w-14 h-14 neu-flat rounded-2xl flex items-center justify-center text-emerald-600">

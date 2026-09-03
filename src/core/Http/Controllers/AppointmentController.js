@@ -1,18 +1,27 @@
 import { AppointmentService } from '../../Services/AppointmentService.js';
+import { sanitizeNoSQL, appointmentBookingSchema } from '../Middleware/security.js';
+import { logger } from '../../Logger/pino.js';
 
 export class AppointmentController {
   static async bookAppointment(req) {
     try {
-      const body = await req.json();
+      const rawBody = await req.json();
+      const body = sanitizeNoSQL(rawBody);
 
-      if (!body.patientName || !body.patientPhone || !body.doctorId || !body.appointmentDate || !body.timeSlot) {
+      const validation = appointmentBookingSchema.safeParse(body);
+      if (!validation.success) {
         return Response.json(
-          { success: false, message: 'Patient Name, Phone, Doctor, Date, and Time Slot are required.', error: 'VALIDATION_ERROR' },
+          {
+            success: false,
+            message: 'Validation Error: Please check all required fields.',
+            error: 'VALIDATION_ERROR',
+            details: validation.error.format(),
+          },
           { status: 400 }
         );
       }
 
-      const appointment = await AppointmentService.createAppointment(body);
+      const appointment = await AppointmentService.createAppointment(validation.data);
 
       return Response.json(
         {
@@ -23,6 +32,7 @@ export class AppointmentController {
         { status: 201 }
       );
     } catch (error) {
+      logger.error({ error: error.message }, 'Failed to book OPD appointment');
       return Response.json(
         { success: false, message: error.message || 'Failed to book OPD appointment.', error: 'SERVER_ERROR' },
         { status: 500 }
@@ -33,7 +43,8 @@ export class AppointmentController {
   static async getAppointment(req) {
     try {
       const { searchParams } = new URL(req.url);
-      const tokenNumber = searchParams.get('token');
+      const rawToken = searchParams.get('token');
+      const tokenNumber = sanitizeNoSQL(rawToken);
 
       if (!tokenNumber) {
         return Response.json({ success: false, message: 'Token number required', error: 'VALIDATION_ERROR' }, { status: 400 });
@@ -46,6 +57,7 @@ export class AppointmentController {
 
       return Response.json({ success: true, data: appointment });
     } catch (error) {
+      logger.error({ error: error.message }, 'Error retrieving appointment');
       return Response.json({ success: false, message: error.message, error: 'SERVER_ERROR' }, { status: 500 });
     }
   }
