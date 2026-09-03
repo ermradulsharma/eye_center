@@ -1,4 +1,4 @@
-# R.S. Eye Care & Rehabilitation Center, Etah
+# R.S. Eye Care & Rehabilitation Center
 
 > **Premier Super-Specialty Ophthalmology Hospital, Low Vision Rehabilitation & Prescription Optical Platform**
 
